@@ -1,0 +1,30 @@
+// layout.scss
+.app-layout {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    
+    // Optional: Add a subtle pattern
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(0, 112, 186, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(0, 168, 232, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+  }
+  
+  .main-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    
+    @media (max-width: 768px) {
+      padding: 1rem;
+    }
+  }
