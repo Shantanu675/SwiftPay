@@ -2,7 +2,7 @@ package com.paypal.wallet_service.scheduler;
 
 import com.paypal.wallet_service.entity.WalletHold;
 import com.paypal.wallet_service.repository.WalletHoldRepository;
-import com.paypal.wallet_service.service.WalletService;
+import com.paypal.wallet_service.service.WalletServiceImplementation;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
@@ -11,9 +11,9 @@ import java.util.List;
 public class HoldExpiryScheduler {
 
     private final WalletHoldRepository walletHoldRepository;
-    private final WalletService walletService;
+    private final WalletServiceImplementation walletService;
 
-    public HoldExpiryScheduler(WalletHoldRepository walletHoldRepository, WalletService walletService) {
+    public HoldExpiryScheduler(WalletHoldRepository walletHoldRepository, WalletServiceImplementation walletService) {
         this.walletHoldRepository = walletHoldRepository;
         this.walletService = walletService;
     }

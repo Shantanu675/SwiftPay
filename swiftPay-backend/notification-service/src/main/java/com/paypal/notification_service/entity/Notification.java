@@ -15,6 +15,8 @@ public class Notification {
     private Long userId;
     private  String message;
     private LocalDateTime sendAt;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isRead = false;
 
     public Notification() {
     }
@@ -56,5 +58,13 @@ public class Notification {
 
     public void setSendAt(LocalDateTime sendAt) {
         this.sendAt = sendAt;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {  // or setIsRead(boolean isRead)
+        this.isRead = read;
     }
 }

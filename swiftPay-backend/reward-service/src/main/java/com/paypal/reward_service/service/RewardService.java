@@ -8,5 +8,7 @@ public interface RewardService {
 
     Reward sendReward(Reward reward);
 
+    List<Reward> getAllRewards();
+
     List<Reward> getRewardsByUserId(Long userId);
 }

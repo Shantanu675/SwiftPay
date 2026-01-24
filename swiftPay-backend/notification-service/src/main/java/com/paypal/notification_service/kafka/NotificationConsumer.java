@@ -33,14 +33,31 @@ public class NotificationConsumer {
 //    }
     @KafkaListener(topics = "txn-initiated", groupId = "notification-group")
     public void consumeTransaction(Transaction transaction) {
+//        System.out.println("Received Transaction: " + transaction);
+//
+//        Notification notification = new Notification();
+//        notification.setUserId(transaction.getSenderId());
+//        notification.setMessage("₹ " + transaction.getAmount() + " received from user " + transaction.getSenderId());
+//        notification.setSendAt(LocalDateTime.now());
+//
+//        notificationRepository.save(notification);
+//        System.out.println("✅ Notification saved: " + notification);
         System.out.println("Received Transaction: " + transaction);
 
-        Notification notification = new Notification();
-        notification.setUserId(transaction.getSenderId());
-        notification.setMessage("₹ " + transaction.getAmount() + " received from user " + transaction.getSenderId());
-        notification.setSendAt(LocalDateTime.now());
+        // Notification for receiver
+        Notification receiverNotification = new Notification();
+        receiverNotification.setUserId(transaction.getReceiverId());  // Assuming getReceiverId() exists; adjust if it's getReceiverUserId()
+        receiverNotification.setMessage("₹ " + transaction.getAmount() + " received from user " + transaction.getSenderId());
+        receiverNotification.setSendAt(LocalDateTime.now());
+        notificationRepository.save(receiverNotification);
+        System.out.println("✅ Receiver notification saved: " + receiverNotification);
 
-        notificationRepository.save(notification);
-        System.out.println("✅ Notification saved: " + notification);
+        // Notification for sender
+        Notification senderNotification = new Notification();
+        senderNotification.setUserId(transaction.getSenderId());
+        senderNotification.setMessage("₹ " + transaction.getAmount() + " sent to user " + transaction.getReceiverId());
+        senderNotification.setSendAt(LocalDateTime.now());
+        notificationRepository.save(senderNotification);
+        System.out.println("✅ Sender notification saved: " + senderNotification);
     }
 }

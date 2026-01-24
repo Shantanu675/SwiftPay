@@ -9,12 +9,14 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth(); 
 
+  const API_URL = process.env.REACT_APP_API_URL;
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     const payload = { email, password };
   
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

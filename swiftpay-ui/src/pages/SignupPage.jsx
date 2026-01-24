@@ -6,12 +6,14 @@ function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const handleSignup = async (e) => {
     e.preventDefault();
     const payload = { name, email, password };
 
     try {
-      const response = await fetch("http://localhost:8080/auth/signup", {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

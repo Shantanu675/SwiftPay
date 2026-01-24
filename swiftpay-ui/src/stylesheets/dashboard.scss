@@ -698,243 +698,514 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   100% { transform: scale(1); }
 }
 
-// Notifications Panel
-.notifications-panel-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  z-index: 10000;
-  animation: fadeIn 0.3s ease;
+// // Notifications Panel
+// .notifications-panel-overlay {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background: rgba(0, 0, 0, 0.5);
+//   display: flex;
+//   justify-content: flex-end;
+//   align-items: flex-start;
+//   z-index: 10000;
+//   animation: fadeIn 0.3s ease;
+// }
+
+// .notifications-panel {
+//   background: white;
+//   width: 400px;
+//   height: 100vh;
+//   box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+//   animation: slideInRight 0.3s ease;
+//   display: flex;
+//   flex-direction: column;
+
+//   .panel-header {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     padding: 1.5rem;
+//     border-bottom: 1px solid $border-color;
+//     background: #f8fafc;
+
+//     h3 {
+//       margin: 0;
+//       color: $text-dark;
+//       font-size: 1.3rem;
+//       font-weight: 600;
+//     }
+
+//     .panel-actions {
+//       display: flex;
+//       align-items: center;
+//       gap: 1rem;
+
+//       .mark-all-read {
+//         background: $primary-blue;
+//         color: white;
+//         border: none;
+//         padding: 0.5rem 1rem;
+//         border-radius: 8px;
+//         font-size: 0.8rem;
+//         font-weight: 600;
+//         cursor: pointer;
+//         transition: $transition;
+
+//         &:hover {
+//           background: darken($primary-blue, 10%);
+//         }
+//       }
+
+//       .close-panel {
+//         background: none;
+//         border: none;
+//         font-size: 1.5rem;
+//         cursor: pointer;
+//         color: $text-light;
+//         width: 32px;
+//         height: 32px;
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//         border-radius: 50%;
+
+//         &:hover {
+//           background: #e2e8f0;
+//           color: $text-dark;
+//         }
+//       }
+//     }
+//   }
+
+//   .notifications-list {
+//     flex: 1;
+//     overflow-y: auto;
+//     padding: 1rem;
+//   }
+
+//   .notification-item {
+//     display: flex;
+//     align-items: flex-start;
+//     gap: 1rem;
+//     padding: 1rem;
+//     border-radius: 12px;
+//     margin-bottom: 0.5rem;
+//     transition: $transition;
+//     border-left: 4px solid transparent;
+
+//     &.unread {
+//       background: rgba($primary-blue, 0.05);
+//       border-left-color: $primary-blue;
+      
+//       .notification-message {
+//         font-weight: 600;
+//       }
+//     }
+
+//     &.read {
+//       background: #f8fafc;
+//       opacity: 0.7;
+//     }
+
+//     &:hover {
+//       background: #f1f5f9;
+//     }
+
+//     .notification-icon {
+//       font-size: 1.2rem;
+//       flex-shrink: 0;
+//       margin-top: 2px;
+//     }
+
+//     .notification-content {
+//       flex: 1;
+
+//       .notification-message {
+//         color: $text-dark;
+//         margin-bottom: 0.25rem;
+//         line-height: 1.4;
+//       }
+
+//       .notification-time {
+//         font-size: 0.8rem;
+//         color: $text-light;
+//       }
+//     }
+//   }
+
+//   .no-notifications {
+//     text-align: center;
+//     padding: 3rem 1rem;
+//     color: $text-light;
+
+//     .no-notifications-icon {
+//       font-size: 3rem;
+//       margin-bottom: 1rem;
+//       opacity: 0.5;
+//     }
+
+//     p {
+//       margin: 0;
+//       font-size: 1rem;
+//     }
+//   }
+// }
+
+// // Toast Notifications (keep existing)
+// .toast-notification {
+//   position: fixed;
+//   top: 20px;
+//   right: 20px;
+//   background: white;
+//   border-radius: 12px;
+//   padding: 1rem;
+//   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+//   border-left: 4px solid $primary-blue;
+//   z-index: 10001;
+//   animation: slideInRight 0.3s ease;
+//   max-width: 350px;
+  
+//   .toast-content {
+//     display: flex;
+//     align-items: flex-start;
+//     gap: 0.75rem;
+    
+//     .toast-icon {
+//       font-size: 1.2rem;
+//       flex-shrink: 0;
+//       margin-top: 2px;
+//     }
+    
+//     .toast-message {
+//       flex: 1;
+//       color: $text-dark;
+//       font-size: 0.9rem;
+      
+//       strong {
+//         display: block;
+//         margin-bottom: 0.25rem;
+//       }
+      
+//       div {
+//         color: $text-light;
+//         font-size: 0.85rem;
+//       }
+//     }
+    
+//     .toast-close {
+//       background: none;
+//       border: none;
+//       font-size: 1.2rem;
+//       cursor: pointer;
+//       color: $text-light;
+//       padding: 0;
+//       width: 24px;
+//       height: 24px;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       flex-shrink: 0;
+      
+//       &:hover {
+//         color: $text-dark;
+//       }
+//     }
+//   }
+// }
+
+// @keyframes slideInRight {
+//   from {
+//     opacity: 0;
+//     transform: translateX(100%);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateX(0);
+//   }
+// }
+
+// // Pulse animation for notification bell when new notifications arrive
+// .notification-bell.pulse {
+//   animation: bellPulse 1s ease-in-out;
+// }
+
+// @keyframes bellPulse {
+//   0% { transform: scale(1); }
+//   25% { transform: scale(1.1); }
+//   50% { transform: scale(1); }
+//   75% { transform: scale(1.1); }
+//   100% { transform: scale(1); }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ... your existing variables and mixins remain ...
+
+// Notification Bell
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  padding: 0.8rem;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+  color: $text-dark;
+  font-size: 1.6rem;
+
+  &:hover {
+    background: #f1f5f9;
+    color: $primary-blue;
+    transform: scale(1.08);
+  }
+
+  .notification-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: $error;
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px rgba($error, 0.3);
+    animation: pulse 2s infinite;
+  }
 }
 
+// Notifications Panel
 .notifications-panel {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  width: 380px;
+  max-height: 80vh;
   background: white;
-  width: 400px;
-  height: 100vh;
-  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
-  animation: slideInRight 0.3s ease;
-  display: flex;
-  flex-direction: column;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 
   .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 1.2rem 1.5rem;
     border-bottom: 1px solid $border-color;
-    background: #f8fafc;
+    background: #f9fafb;
 
     h3 {
       margin: 0;
-      color: $text-dark;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 600;
+      color: $text-dark;
     }
 
-    .panel-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+    .btn-small {
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+    }
 
-      .mark-all-read {
-        background: $primary-blue;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: $transition;
-
-        &:hover {
-          background: darken($primary-blue, 10%);
-        }
-      }
-
-      .close-panel {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: $text-light;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-
-        &:hover {
-          background: #e2e8f0;
-          color: $text-dark;
-        }
+    .btn-close-panel {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: $text-light;
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 50%;
+      &:hover {
+        background: #f1f5f9;
+        color: $text-dark;
       }
     }
   }
 
   .notifications-list {
-    flex: 1;
+    max-height: 60vh;
     overflow-y: auto;
-    padding: 1rem;
-  }
+    padding: 0.5rem;
 
-  .notification-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-    transition: $transition;
-    border-left: 4px solid transparent;
+    .notification-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      margin: 0.4rem 0;
+      background: rgba($primary-blue, 0.03);
+      transition: all 0.2s ease;
 
-    &.unread {
-      background: rgba($primary-blue, 0.05);
-      border-left-color: $primary-blue;
-      
-      .notification-message {
-        font-weight: 600;
-      }
-    }
-
-    &.read {
-      background: #f8fafc;
-      opacity: 0.7;
-    }
-
-    &:hover {
-      background: #f1f5f9;
-    }
-
-    .notification-icon {
-      font-size: 1.2rem;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .notification-content {
-      flex: 1;
-
-      .notification-message {
-        color: $text-dark;
-        margin-bottom: 0.25rem;
-        line-height: 1.4;
+      &:hover {
+        background: rgba($primary-blue, 0.08);
       }
 
-      .notification-time {
-        font-size: 0.8rem;
-        color: $text-light;
+      .notification-content {
+        flex: 1;
+
+        .notification-message {
+          margin: 0 0 0.4rem;
+          font-size: 0.95rem;
+          line-height: 1.4;
+          color: $text-dark;
+        }
+
+        .notification-time {
+          font-size: 0.78rem;
+          color: $text-light;
+        }
+      }
+
+      .btn-mark-read {
+        background: $primary-blue;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: darken($primary-blue, 8%);
+        }
       }
     }
   }
 
   .no-notifications {
+    padding: 4rem 1.5rem;
     text-align: center;
-    padding: 3rem 1rem;
     color: $text-light;
 
     .no-notifications-icon {
-      font-size: 3rem;
+      font-size: 3.5rem;
       margin-bottom: 1rem;
-      opacity: 0.5;
+      opacity: 0.6;
     }
 
     p {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
   }
 }
 
-// Toast Notifications (keep existing)
+// Toast (improved positioning & style)
 .toast-notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 24px;
+  right: 24px;
   background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border-left: 4px solid $primary-blue;
-  z-index: 10001;
-  animation: slideInRight 0.3s ease;
-  max-width: 350px;
-  
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.18);
+  border-left: 5px solid $primary-blue;
+  z-index: 10000;
+  max-width: 380px;
+  animation: slideInRight 0.4s ease-out;
+
   .toast-content {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    
+    gap: 1rem;
+
     .toast-icon {
-      font-size: 1.2rem;
-      flex-shrink: 0;
-      margin-top: 2px;
+      font-size: 1.5rem;
+      color: $primary-blue;
     }
-    
+
     .toast-message {
       flex: 1;
-      color: $text-dark;
-      font-size: 0.9rem;
-      
+
       strong {
         display: block;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.4rem;
+        font-size: 1.05rem;
       }
-      
+
       div {
         color: $text-light;
-        font-size: 0.85rem;
+        font-size: 0.92rem;
       }
     }
-    
+
     .toast-close {
       background: none;
       border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
+      font-size: 1.4rem;
       color: $text-light;
+      cursor: pointer;
       padding: 0;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      
-      &:hover {
-        color: $text-dark;
-      }
+      &:hover { color: $text-dark; }
     }
   }
 }
 
+// Animations
 @keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-// Pulse animation for notification bell when new notifications arrive
-.notification-bell.pulse {
-  animation: bellPulse 1s ease-in-out;
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
 }
 
 @keyframes bellPulse {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.1); }
-  50% { transform: scale(1); }
-  75% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.15); }
 }

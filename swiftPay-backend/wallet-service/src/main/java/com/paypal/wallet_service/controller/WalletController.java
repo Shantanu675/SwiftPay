@@ -2,7 +2,7 @@ package com.paypal.wallet_service.controller;
 
 
 import com.paypal.wallet_service.dto.*;
-import com.paypal.wallet_service.service.WalletService;
+import com.paypal.wallet_service.service.WalletServiceImplementation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/wallets")
 public class WalletController {
 
-    private final WalletService walletService;
+    private final WalletServiceImplementation walletService;
 
-    public WalletController(WalletService walletService) {
+    public WalletController(WalletServiceImplementation walletService) {
         this.walletService = walletService;
     }
 

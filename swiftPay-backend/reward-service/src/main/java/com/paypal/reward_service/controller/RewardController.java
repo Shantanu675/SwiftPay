@@ -14,20 +14,20 @@ import java.util.List;
 @RequestMapping("/api/rewards/")
 public class RewardController {
 
-    private final RewardRepository rewardRepository;
+    private final RewardService rewardService;
 
-    public RewardController(RewardRepository rewardRepository) {
-        this.rewardRepository = rewardRepository;
+    public RewardController(RewardService rewardService) {
+        this.rewardService = rewardService;
     }
 
     @GetMapping
     public List<Reward> getAllRewards() {
-        return rewardRepository.findAll();
+        return rewardService.getAllRewards();
     }
 
     @GetMapping("/user/{userId}")
     public List<Reward> getRewardsByUserId(@PathVariable Long userId) {
 //        return rewardService.getRewardsByUserId(userId);
-        return rewardRepository.findByUserId(userId);
+        return rewardService.getRewardsByUserId(userId);
     }
 }

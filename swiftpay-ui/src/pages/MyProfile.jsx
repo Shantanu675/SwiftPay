@@ -10,6 +10,8 @@ const MyProfile = () => {
   const [editForm, setEditForm] = useState({});
   const [walletBalance, setWalletBalance] = useState(0);
 
+  const API_URL = process.env.REACT_APP_API_URL;
+  
   useEffect(() => {
     fetchUserData();
     fetchWalletBalance();
@@ -29,7 +31,7 @@ const MyProfile = () => {
       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
       const userId = tokenPayload.userId;
 
-      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -59,7 +61,7 @@ const MyProfile = () => {
       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
       const userId = tokenPayload.userId;
 
-      const response = await fetch(`http://localhost:8080/api/v1/wallets/${userId}`, {
+      const response = await fetch(`${API_URL}/api/v1/wallets/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -95,7 +97,7 @@ const MyProfile = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+      const response = await fetch(`${API_URL}/api/users/${user.id}`, {
         method: 'PUT', // You might need to add this endpoint to your backend
         headers: {
           'Authorization': `Bearer ${token}`,

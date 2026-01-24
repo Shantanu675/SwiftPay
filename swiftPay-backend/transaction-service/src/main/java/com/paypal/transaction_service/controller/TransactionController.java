@@ -1,6 +1,7 @@
 package com.paypal.transaction_service.controller;
 
 
+import com.paypal.transaction_service.dto.TransferRequest;
 import com.paypal.transaction_service.entity.Transaction;
 import com.paypal.transaction_service.service.TransactionService;
 import com.paypal.transaction_service.util.JWTUtil;
@@ -24,7 +25,7 @@ public class TransactionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody Transaction transaction, HttpServletRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody TransferRequest req, Transaction transaction, HttpServletRequest request) {
 
         // Read userId from gateway header
         String userIdHeader = request.getHeader("X-User-Id");
@@ -34,7 +35,7 @@ public class TransactionController {
         }
 
         Long tokenUserId = Long.parseLong(userIdHeader);
-        Long requestSenderId = transaction.getSenderId();
+        Long requestSenderId = req.getSenderId();
 
         System.out.println("Gateway userId: " + tokenUserId);
         System.out.println("Transaction senderId: " + requestSenderId);
@@ -44,7 +45,7 @@ public class TransactionController {
                     .body("User ID mismatch: You are not authorized to create this transaction.");
         }
 
-        Transaction created = service.createTransaction(transaction);
+        Transaction created = service.createTransaction(req, transaction);
         return ResponseEntity.ok(created);
     }
 

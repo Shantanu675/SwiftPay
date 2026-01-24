@@ -2,6 +2,7 @@ package com.paypal.transaction_service.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.transaction_service.dto.TransferRequest;
 import com.paypal.transaction_service.entity.Transaction;
 import com.paypal.transaction_service.kafka.KafkaEventProducer;
 import com.paypal.transaction_service.repository.TransactionRepository;
@@ -33,14 +34,17 @@ public class TransactionServiceImplementation implements TransactionService{
     }
 
     @Override
-    public Transaction createTransaction(Transaction request) {
+    public Transaction createTransaction(TransferRequest req, Transaction request) {
         System.out.println("🚀 Entered createTransaction()");
 
-        Long senderId = request.getSenderId();
-        Long receiverId = request.getReceiverId();
-        Double amount = request.getAmount();
+        Long senderId = req.getSenderId();
+        Long receiverId = req.getReceiverId();
+        Double amount = req.getAmount();
 
         // Step 0: Mark transaction as PENDING
+        request.setSenderId(senderId);
+        request.setReceiverId(receiverId);
+        request.setAmount(amount);
         request.setStatus("PENDING");
         request.setTimestamp(LocalDateTime.now());
         Transaction savedTransaction = transactionRepository.save(request);

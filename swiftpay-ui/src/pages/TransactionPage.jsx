@@ -16,6 +16,8 @@ const Transactions = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'timestamp', direction: 'desc' });
   const transactionsPerPage = 10;
 
+  const API_URL = process.env.REACT_APP_API_URL;
+  
   useEffect(() => {
     fetchTransactions();
     fetchUsers();
@@ -37,7 +39,7 @@ const Transactions = () => {
       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
       const userId = tokenPayload.userId;
 
-      const response = await fetch(`http://localhost:8080/api/transactions/user/${userId}`, {
+      const response = await fetch(`${API_URL}/api/transactions/user/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -63,7 +65,7 @@ const Transactions = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:8080/api/users/all', {
+      const response = await fetch(`${API_URL}/api/users/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

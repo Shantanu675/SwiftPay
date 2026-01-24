@@ -21,6 +21,11 @@ public class RewardServiceImplementation implements RewardService{
         return rewardRepository.save(reward);
     }
 
+    @Override
+    public List<Reward> getAllRewards() {
+        return rewardRepository.findAll();
+    }
+
     public List<Reward> getRewardsByUserId(Long userId) {
         return rewardRepository.findByUserId(userId);
     }

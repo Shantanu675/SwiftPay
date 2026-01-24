@@ -1,46 +1,420 @@
+// import React, { useState, useEffect } from 'react';
+// import '../stylesheets/dashboard.scss';
+// import { useNavigate } from "react-router-dom";
+// import logo from "../assets/swiftPay_logo.jpeg"
+
+// const Dashboard = () => {
+//   const [user, setUser] = useState(null);
+//   const [stats, setStats] = useState({});
+//   const [transactions, setTransactions] = useState([]);
+//   const [notifications, setNotifications] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [lastNotificationCount, setLastNotificationCount] = useState(0);
+  
+//   // ADDED: Separate state for unread notifications
+//   const [unreadNotifications, setUnreadNotifications] = useState([]);
+//   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
+//   const navigate = useNavigate();
+
+//   const API_URL = process.env.REACT_APP_API_URL;
+  
+//   useEffect(() => {
+//     fetchDashboardData();
+    
+//     // Poll for new notifications every 10 seconds
+//     const pollInterval = setInterval(() => {
+//       checkNewNotifications();
+//     }, 10000); // 10 seconds
+    
+//     return () => clearInterval(pollInterval);
+//   }, []);
+
+//   const fetchDashboardData = async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const token = localStorage.getItem('token');
+
+//       if (!token) {
+//         navigate("/");
+//         throw new Error('No authentication token found. Please login.');
+//       }
+
+//       // Decode JWT to get userId
+//       let userId;
+//       try {
+//         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+//         userId = tokenPayload.userId || tokenPayload.sub;
+//       } catch (e) {
+//         throw new Error('Invalid token format');
+//       }
+
+//       // Fetch user data
+//       const userRes = await fetch(`${API_URL}/api/users/${userId}`, {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       if (!userRes.ok) {
+//         throw new Error(`Failed to fetch user: ${userRes.status}`);
+//       }
+//       const userData = await userRes.json();
+//       setUser(userData);
+
+//       // Fetch wallet balance
+//       const walletRes = await fetch(`${API_URL}/api/v1/wallets/${userId}`, {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       let walletBalance = 0;
+//       if (walletRes.ok) {
+//         const walletData = await walletRes.json();
+//         walletBalance = walletData.balance;
+//       }
+
+//       // Fetch recent transactions
+//       const transactionsRes = await fetch(`${API_URL}/api/transactions/user/${userId}`, {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       let userTransactions = [];
+//       if (transactionsRes.ok) {
+//         const transactionsData = await transactionsRes.json();
+//         userTransactions = transactionsData
+//           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+//           .slice(0, 5);
+//       }
+
+//       // Fetch notifications from correct port (8084)
+//       let userNotifications = [];
+//       try {
+//         const notificationsRes = await fetch(`${API_URL}/api/notify/${userId}`, {
+//           headers: {
+//             'Authorization': `Bearer ${token}`,
+//             'Content-Type': 'application/json'
+//           }
+//         });
+
+//         if (notificationsRes.ok) {
+//           userNotifications = await notificationsRes.json();
+//           setLastNotificationCount(userNotifications.length);
+//         }
+//       } catch (notifyError) {
+//         console.warn('Notifications service not available:', notifyError);
+//       }
+
+      
+
+//       // Fetch rewards from correct port (8083)
+//       let rewardsCount = 0;
+//       try {
+//         const rewardsRes = await fetch(`${API_URL}/api/rewards/user/${userId}`, {
+//           headers: {
+//             'Authorization': `Bearer ${token}`,
+//             'Content-Type': 'application/json'
+//           }
+//         });
+
+//         if (rewardsRes.ok) {
+//           const rewardsData = await rewardsRes.json();
+//           rewardsCount = rewardsData.length;
+//         }
+//       } catch (rewardsError) {
+//         console.warn('Rewards service not available:', rewardsError);
+//       }
+
+//       // Set all data
+//       setStats({
+//         balance: walletBalance,
+//         transactions: userTransactions.length,
+//         rewards: rewardsCount,
+//         users: 1 // For individual user dashboard
+//       });
+
+//       setTransactions(userTransactions);
+//       setNotifications(userNotifications);
+
+//     } catch (err) {
+//       console.error('Dashboard error:', err);
+//       setError(err.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const checkNewNotifications = async () => {
+//     try {
+//       const token = localStorage.getItem('token');
+//       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+//       const userId = tokenPayload.userId;
+
+//       const response = await fetch(`${API_URL}/api/notify/${userId}`, {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       if (response.ok) {
+//         const newNotifications = await response.json();
+        
+//         // Check if there are new notifications
+//         if (newNotifications.length > lastNotificationCount) {
+//           const newNotificationCount = newNotifications.length - lastNotificationCount;
+//           const latestNotification = newNotifications[0]; // Get the newest one
+          
+//           // Show browser notification
+//           if ('Notification' in window && Notification.permission === 'granted') {
+//             new Notification('SwiftPay - New Notification', {
+//               body: latestNotification.message,
+//               icon: '/logo.png',
+//               badge: '/logo.png'
+//             });
+//           }
+          
+//           // Show toast notification in app
+//           showToastNotification(latestNotification, newNotificationCount);
+          
+//           // Update notifications state and last count
+//           setNotifications(newNotifications);
+//           setLastNotificationCount(newNotifications.length);
+          
+//           // Add pulse animation to bell
+//           const bell = document.querySelector('.notification-bell');
+//           if (bell) {
+//             bell.classList.add('pulse');
+//             setTimeout(() => {
+//               bell.classList.remove('pulse');
+//             }, 2000);
+//           }
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error checking notifications:', error);
+//     }
+//   };
+  
+  
+
+//   const showToastNotification = (notification, count) => {
+//     // Remove existing toast if any
+//     const existingToast = document.querySelector('.toast-notification');
+//     if (existingToast) {
+//       existingToast.remove();
+//     }
+    
+//     // Create toast element
+//     const toast = document.createElement('div');
+//     toast.className = 'toast-notification';
+//     toast.innerHTML = `
+//       <div class="toast-content">
+//         <div class="toast-icon">🔔</div>
+//         <div class="toast-message">
+//           <strong>${count} new notification${count > 1 ? 's' : ''}</strong>
+//           <div>${notification.message}</div>
+//         </div>
+//         <button class="toast-close">&times;</button>
+//       </div>
+//     `;
+    
+//     document.body.appendChild(toast);
+    
+//     // Auto remove after 5 seconds
+//     setTimeout(() => {
+//       if (toast.parentNode) {
+//         toast.remove();
+//       }
+//     }, 5000);
+    
+//     // Close button
+//     toast.querySelector('.toast-close').addEventListener('click', () => {
+//       toast.remove();
+//     });
+//   };
+
+//   // Request notification permission on component mount
+//   useEffect(() => {
+//     if ('Notification' in window && Notification.permission === 'default') {
+//       Notification.requestPermission();
+//     }
+//   }, []);
+
+//   const handleSendMoney = () => {
+//     window.location.href = '/send-money';
+//   };
+
+  
+//   const handleAddFunds = () => {
+//     window.location.href = '/add-funds';
+//   };
+
+//   const handleViewTransactions = () => {
+//     window.location.href = '/transactions';
+//   };
+
+//   const handleViewRewards = () => {
+//     window.location.href = '/rewards';
+//   };
+
+//   const handleLogout = () => {
+//     localStorage.removeItem('token');
+//     window.location.href = '/login';
+//   };
+
+//   const formatDate = (timestamp) => {
+//     return new Date(timestamp).toLocaleDateString('en-US', {
+//       month: 'short',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit'
+//     });
+//   };
+
+//   const isSentTransaction = (transaction) => {
+//     if (!user) return false;
+//     return transaction.senderId === user.id;
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="dashboard-loading">
+//         <div className="loading-spinner"></div>
+//         <p>Loading your dashboard...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="dashboard-container">
+      
+//       {/* Header */}
+//       <header className="dashboard-header">
+//         <div className="header-left">
+//           <h1>Dashboard</h1>
+//           {error && (
+//             <div className="error-banner">
+//               <span>⚠️ {error}</span>
+//             </div>
+//           )}
+//         </div>
+//         <div className="header-right">
+//           <div className="notification-bell">
+//             <b className="fas fa-bell">🔔</b>
+//             {notifications.length > 0 && (
+//               <div className="notification-count">
+//                 {notifications.length}
+//               </div>
+//             )}
+//           </div>
+//           <div className="user-profile">
+//             <div className="user-avatar">
+//               {user?.name?.charAt(0).toUpperCase() || 'U'}
+//             </div>
+//             <div className="user-info">
+//               <div className="user-name">{user?.name || 'User'}</div>
+//               <div className="user-email">{user?.email || 'user@example.com'}</div>
+//             </div>
+//           </div>
+//           <button className="btn btn-secondary" onClick={handleLogout}>
+//             Logout
+//           </button>
+//         </div>
+//       </header>
+
+//       {/* Sidebar */}
+//       <aside className="dashboard-sidebar">
+//         <div className="sidebar-brand">
+//           <h2>
+//             <img 
+//               src={logo} 
+//               alt="SwiftPay Logo" 
+//               className="brand-logo" 
+//             />
+//             SwiftPay
+//           </h2>
+//         </div>
+
+//         <nav className="sidebar-nav">
+//           <a href="#" className="nav-item active">
+//             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+//             </svg>
+//             <span className="nav-label">Overview</span>
+//           </a>
+//           <a href="/transactions" className="nav-item">
+//             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v1m0 6v1m0-1v1m6-10a2 2 0 11-4 0 2 2 0 014 0zM6 18a2 2 0 11-4 0 2 2 0 014 0z" />
+//             </svg>
+//             <span className="nav-label">Transactions</span>
+//           </a>
+//           <a href="/send-money" className="nav-item">
+//             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+//             </svg>
+//             <span className="nav-label">Send Money</span>
+//           </a>
+//           <a href="/add-funds" className="nav-item">
+//             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+//             </svg>
+//             <span className="nav-label">Add Funds</span>
+//           </a>
+//           <a href="/rewards" className="nav-item">
+//             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+//             </svg>
+//             <span className="nav-label">Rewards</span>
+//           </a>
+//         </nav>
+//       </aside>     
+
 import React, { useState, useEffect } from 'react';
 import '../stylesheets/dashboard.scss';
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/swiftPay_logo.jpeg"
+import logo from "../assets/swiftPay_logo.jpeg";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({});
   const [transactions, setTransactions] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]); // unread only
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastNotificationCount, setLastNotificationCount] = useState(0);
-  
-  // ADDED: Separate state for unread notifications
-  const [unreadNotifications, setUnreadNotifications] = useState([]);
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchDashboardData();
-    
-    // Poll for new notifications every 10 seconds
+
     const pollInterval = setInterval(() => {
       checkNewNotifications();
-    }, 10000); // 10 seconds
-    
+    }, 10000);
+
     return () => clearInterval(pollInterval);
   }, []);
 
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const token = localStorage.getItem('token');
-
       if (!token) {
         navigate("/");
         throw new Error('No authentication token found. Please login.');
       }
 
-      // Decode JWT to get userId
       let userId;
       try {
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
@@ -49,42 +423,31 @@ const Dashboard = () => {
         throw new Error('Invalid token format');
       }
 
-      // Fetch user data
-      const userRes = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      // User data
+      const userRes = await fetch(`${API_URL}/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
-
-      if (!userRes.ok) {
-        throw new Error(`Failed to fetch user: ${userRes.status}`);
-      }
+      if (!userRes.ok) throw new Error(`Failed to fetch user: ${userRes.status}`);
       const userData = await userRes.json();
       setUser(userData);
 
-      // Fetch wallet balance
-      const walletRes = await fetch(`http://localhost:8080/api/v1/wallets/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      // Wallet
+      const walletRes = await fetch(`${API_URL}/api/v1/wallets/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
-
       let walletBalance = 0;
       if (walletRes.ok) {
         const walletData = await walletRes.json();
         walletBalance = walletData.balance;
       }
 
-      // Fetch recent transactions
-      const transactionsRes = await fetch(`http://localhost:8080/api/transactions/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      // Recent transactions
+      const transactionsRes = await fetch(`${API_URL}/api/transactions/user/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
-
       let userTransactions = [];
       if (transactionsRes.ok) {
         const transactionsData = await transactionsRes.json();
@@ -93,16 +456,12 @@ const Dashboard = () => {
           .slice(0, 5);
       }
 
-      // Fetch notifications from correct port (8084)
+      // Unread notifications
       let userNotifications = [];
       try {
-        const notificationsRes = await fetch(`http://localhost:8080/api/notify/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        const notificationsRes = await fetch(`${API_URL}/api/notify/${userId}/unread`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
-
         if (notificationsRes.ok) {
           userNotifications = await notificationsRes.json();
           setLastNotificationCount(userNotifications.length);
@@ -111,18 +470,12 @@ const Dashboard = () => {
         console.warn('Notifications service not available:', notifyError);
       }
 
-      
-
-      // Fetch rewards from correct port (8083)
+      // Rewards count
       let rewardsCount = 0;
       try {
-        const rewardsRes = await fetch(`http://localhost:8080/api/rewards/user/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        const rewardsRes = await fetch(`${API_URL}/api/rewards/user/${userId}`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
-
         if (rewardsRes.ok) {
           const rewardsData = await rewardsRes.json();
           rewardsCount = rewardsData.length;
@@ -131,17 +484,14 @@ const Dashboard = () => {
         console.warn('Rewards service not available:', rewardsError);
       }
 
-      // Set all data
       setStats({
         balance: walletBalance,
         transactions: userTransactions.length,
         rewards: rewardsCount,
-        users: 1 // For individual user dashboard
+        users: 1
       });
-
       setTransactions(userTransactions);
       setNotifications(userNotifications);
-
     } catch (err) {
       console.error('Dashboard error:', err);
       setError(err.message);
@@ -156,44 +506,34 @@ const Dashboard = () => {
       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
       const userId = tokenPayload.userId;
 
-      const response = await fetch(`http://localhost:8080/api/notify/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await fetch(`${API_URL}/api/notify/${userId}/unread`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
 
       if (response.ok) {
         const newNotifications = await response.json();
-        
-        // Check if there are new notifications
+
         if (newNotifications.length > lastNotificationCount) {
-          const newNotificationCount = newNotifications.length - lastNotificationCount;
-          const latestNotification = newNotifications[0]; // Get the newest one
-          
-          // Show browser notification
+          const newCount = newNotifications.length - lastNotificationCount;
+          const latest = newNotifications[0];
+
           if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('SwiftPay - New Notification', {
-              body: latestNotification.message,
+              body: latest.message,
               icon: '/logo.png',
               badge: '/logo.png'
             });
           }
-          
-          // Show toast notification in app
-          showToastNotification(latestNotification, newNotificationCount);
-          
-          // Update notifications state and last count
+
+          showToastNotification(latest, newCount);
+
           setNotifications(newNotifications);
           setLastNotificationCount(newNotifications.length);
-          
-          // Add pulse animation to bell
+
           const bell = document.querySelector('.notification-bell');
           if (bell) {
             bell.classList.add('pulse');
-            setTimeout(() => {
-              bell.classList.remove('pulse');
-            }, 2000);
+            setTimeout(() => bell.classList.remove('pulse'), 2000);
           }
         }
       }
@@ -201,17 +541,55 @@ const Dashboard = () => {
       console.error('Error checking notifications:', error);
     }
   };
-  
-  
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API_URL}/api/notify/${notificationId}/read`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      await fetchUnreadNotifications();
+    } catch (error) {
+      console.error('Error marking as read:', error);
+    }
+  };
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const userId = tokenPayload.userId;
+
+      const response = await fetch(`${API_URL}/api/notify/${userId}/unread`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        const unread = await response.json();
+        setNotifications(unread);
+        setLastNotificationCount(unread.length);
+      }
+    } catch (error) {
+      console.error('Error fetching unread notifications:', error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    for (const notif of notifications) {
+      await markAsRead(notif.id);
+    }
+    // Small delay to allow backend to process
+    setTimeout(fetchUnreadNotifications, 400);
+  };
 
   const showToastNotification = (notification, count) => {
-    // Remove existing toast if any
-    const existingToast = document.querySelector('.toast-notification');
-    if (existingToast) {
-      existingToast.remove();
-    }
-    
-    // Create toast element
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
     toast.innerHTML = `
@@ -221,49 +599,30 @@ const Dashboard = () => {
           <strong>${count} new notification${count > 1 ? 's' : ''}</strong>
           <div>${notification.message}</div>
         </div>
-        <button class="toast-close">&times;</button>
+        <button class="toast-close">×</button>
       </div>
     `;
-    
     document.body.appendChild(toast);
-    
-    // Auto remove after 5 seconds
+
     setTimeout(() => {
-      if (toast.parentNode) {
-        toast.remove();
-      }
+      if (toast.parentNode) toast.remove();
     }, 5000);
-    
-    // Close button
+
     toast.querySelector('.toast-close').addEventListener('click', () => {
       toast.remove();
     });
   };
 
-  // Request notification permission on component mount
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }, []);
 
-  const handleSendMoney = () => {
-    window.location.href = '/send-money';
-  };
-
-  
-  const handleAddFunds = () => {
-    window.location.href = '/add-funds';
-  };
-
-  const handleViewTransactions = () => {
-    window.location.href = '/transactions';
-  };
-
-  const handleViewRewards = () => {
-    window.location.href = '/rewards';
-  };
-
+  const handleSendMoney = () => window.location.href = '/send-money';
+  const handleAddFunds = () => window.location.href = '/add-funds';
+  const handleViewTransactions = () => window.location.href = '/transactions';
+  const handleViewRewards = () => window.location.href = '/rewards';
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
@@ -283,6 +642,11 @@ const Dashboard = () => {
     return transaction.senderId === user.id;
   };
 
+  const handleBellClick = (e) => {
+    e.stopPropagation();
+    setShowNotificationsPanel(!showNotificationsPanel);
+  };
+
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -294,8 +658,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      
-      {/* Header */}
       <header className="dashboard-header">
         <div className="header-left">
           <h1>Dashboard</h1>
@@ -306,12 +668,10 @@ const Dashboard = () => {
           )}
         </div>
         <div className="header-right">
-          <div className="notification-bell">
+          <div className="notification-bell" onClick={handleBellClick}>
             <b className="fas fa-bell">🔔</b>
             {notifications.length > 0 && (
-              <div className="notification-count">
-                {notifications.length}
-              </div>
+              <div className="notification-count">{notifications.length}</div>
             )}
           </div>
           <div className="user-profile">
@@ -329,53 +689,62 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Sidebar */}
+      {showNotificationsPanel && (
+        <div className="notifications-panel">
+          <div className="panel-header">
+            <h3>Notifications ({notifications.length})</h3>
+            {notifications.length > 0 && (
+              <button className="btn btn-small mark-all-read" onClick={markAllAsRead}>
+                Mark All Read
+              </button>
+            )}
+            <button className="btn btn-close-panel" onClick={() => setShowNotificationsPanel(false)}>
+              ×
+            </button>
+          </div>
+
+          {notifications.length > 0 ? (
+            <ul className="notifications-list">
+              {notifications.map((notification) => (
+                <li key={notification.id} className="notification-item">
+                  <div className="notification-content">
+                    <p className="notification-message">{notification.message}</p>
+                    <small className="notification-time">{formatDate(notification.sendAt)}</small>
+                  </div>
+                  <button
+                    className="btn btn-mark-read"
+                    onClick={() => markAsRead(notification.id)}
+                  >
+                    Mark Read
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="no-notifications">
+              <div className="no-notifications-icon">🔔</div>
+              <p>No new notifications</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <aside className="dashboard-sidebar">
         <div className="sidebar-brand">
           <h2>
-            <img 
-              src={logo} 
-              alt="SwiftPay Logo" 
-              className="brand-logo" 
-            />
+            <img src={logo} alt="SwiftPay Logo" className="brand-logo" />
             SwiftPay
           </h2>
         </div>
-
         <nav className="sidebar-nav">
-          <a href="#" className="nav-item active">
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span className="nav-label">Overview</span>
-          </a>
-          <a href="/transactions" className="nav-item">
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v1m0 6v1m0-1v1m6-10a2 2 0 11-4 0 2 2 0 014 0zM6 18a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span className="nav-label">Transactions</span>
-          </a>
-          <a href="/send-money" className="nav-item">
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            <span className="nav-label">Send Money</span>
-          </a>
-          <a href="/add-funds" className="nav-item">
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            <span className="nav-label">Add Funds</span>
-          </a>
-          <a href="/rewards" className="nav-item">
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-            </svg>
-            <span className="nav-label">Rewards</span>
-          </a>
+          {/* ... your nav items remain the same ... */}
+          <a href="#" className="nav-item active"> Overview </a>
+          <a href="/transactions" className="nav-item"> Transactions </a>
+          <a href="/send-money" className="nav-item"> Send Money </a>
+          <a href="/add-funds" className="nav-item"> Add Funds </a>
+          <a href="/rewards" className="nav-item"> Rewards </a>
         </nav>
       </aside>
-
       {/* Main Content */}
       <main className="dashboard-main">
         {/* Quick Actions */}

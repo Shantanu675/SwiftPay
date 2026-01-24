@@ -35,7 +35,7 @@ public class RewardConsumer {
 
             Reward reward = new Reward();
             reward.setUserId(transaction.getSenderId());
-            reward.setPoints(transaction.getAmount() * 100);
+            reward.setPoints(transaction.getAmount() * 5);
             reward.setSentAt(LocalDateTime.now());
             reward.setTransactionId(transaction.getId());
 
