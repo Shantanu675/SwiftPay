@@ -1,5 +1,6 @@
 package com.paypal.notification_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,8 +15,14 @@ public class Notification {
 
     private Long userId;
     private  String message;
+
+    // ──── This is the key change ────
+    @Column(name = "send_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    // or with timezone offset: @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "Asia/Kolkata")
     private LocalDateTime sendAt;
-    @Column(nullable = false, columnDefinition = "boolean default false")
+
+    @Column(name = "is_read", nullable = false, columnDefinition = "boolean default false")
     private boolean isRead = false;
 
     public Notification() {
@@ -60,11 +67,12 @@ public class Notification {
         this.sendAt = sendAt;
     }
 
-    public boolean isRead() {
+    // Getter / Setter can stay modern naming
+    public boolean getIsRead() {
         return isRead;
     }
 
-    public void setRead(boolean read) {  // or setIsRead(boolean isRead)
+    public void setRead(boolean read) {     // ← or setIsRead, doesn't matter
         this.isRead = read;
     }
 }

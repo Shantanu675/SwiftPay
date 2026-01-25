@@ -2,6 +2,9 @@ server:
   port: 8084
 
 spring:
+  application:
+    name: notification-service
+
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/notification_service_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
@@ -22,6 +25,9 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
       properties:
-        spring.json.trusted.packages: "com.paypal.notification_service.entity"
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.paypal.notification_service.entity.Transaction
+        spring.json.use.type.headers: false
