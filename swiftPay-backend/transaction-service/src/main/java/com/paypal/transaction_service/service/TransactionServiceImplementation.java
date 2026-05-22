@@ -50,7 +50,7 @@ public class TransactionServiceImplementation implements TransactionService{
         Transaction savedTransaction = transactionRepository.save(request);
         System.out.println("📥 Transaction PENDING saved: " + savedTransaction);
 
-        String walletServiceUrl = "http://localhost:8088/api/v1/wallets"; // wallet service base URL
+        String walletServiceUrl = "http://wallet-service:8088/api/v1/wallets"; // wallet service base URL
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 

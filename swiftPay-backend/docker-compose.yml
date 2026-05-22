@@ -1,22 +1,122 @@
+version: "3.8"
+
 services:
+
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.1
-    ports:
-      - "2181:2181"
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "2181" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swiftpay-network
 
   kafka:
     image: confluentinc/cp-kafka:7.4.1
+    depends_on:
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - swiftpay-network
+
+  mysql:
+    ports:
+      - "3307:3306"
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: swiftpay
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - swiftpay-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    networks:
+      - swiftpay-network
+
+  user-service:
+    build: ./user-service
+    env_file: .env
     depends_on:
-      - zookeeper
+      mysql:
+        condition: service_healthy
+    networks:
+      - swiftpay-network
+
+  transaction-service:
+    build: ./transaction-service
+    env_file: .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - swiftpay-network
+
+  wallet-service:
+    build: ./wallet-service
+    env_file: .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - swiftpay-network
+
+  reward-service:
+    build: ./reward-service
+    env_file: .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - swiftpay-network
+
+  notification-service:
+    build: ./notification-service
+    env_file: .env
+    depends_on:
+      kafka:
+        condition: service_started
+    networks:
+      - swiftpay-network
+
+  api-gateway:
+    build: ./api-gateway
+    env_file: .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - transaction-service
+      - wallet-service
+      - reward-service
+      - notification-service
+      - redis
+    networks:
+      - swiftpay-network
+
+networks:
+  swiftpay-network:

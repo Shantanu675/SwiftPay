@@ -18,14 +18,14 @@ public class RewardConsumer {
 
     private final ObjectMapper mapper;
 
-    public RewardConsumer(RewardRepository rewardRepository, ObjectMapper mapper, ObjectMapper mapper1) {
+    public RewardConsumer(RewardRepository rewardRepository, ObjectMapper mapper) {
         this.rewardRepository = rewardRepository;
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());
         this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    @KafkaListener(topics = "txn-initiated", groupId = "reward-service")
+    @KafkaListener(topics = "txn-initiated", groupId = "reward-group")
     public void consumerTransaction(Transaction transaction) {
         try {
             if (rewardRepository.existsByTransactionId(transaction.getId())) {

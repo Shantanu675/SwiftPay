@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.paypal.user_service.client")
+@EnableFeignClients
+//@EnableFeignClients(basePackages = "com.paypal.user_service.client")
 public class UserServiceApplication {
 
 	public static void main(String[] args) {

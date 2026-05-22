@@ -6,23 +6,17 @@ spring:
     name: transaction-service
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#    template:
-#      default-topic: transaction-event
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/transaction_service_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: shantanu@123
+    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/transaction_service_db
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect

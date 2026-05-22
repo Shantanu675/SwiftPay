@@ -18,7 +18,7 @@ import java.util.List;
 public class JWTrequestFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
-    private JWTrequestFilter(JWTUtil jwtUtil){
+    public JWTrequestFilter(JWTUtil jwtUtil){
         this.jwtUtil = jwtUtil;
     }
 
